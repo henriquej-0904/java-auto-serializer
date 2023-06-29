@@ -33,12 +33,9 @@ public class AutoSerializer {
                 }
             }
 
-            serialize_fields = temp_serialize_fields;
-
-
 
             try {
-                Class<?>[] ctorTypes = serialize_fields.stream()
+                Class<?>[] ctorTypes = temp_serialize_fields.stream()
                     .map(Field::getType).toArray(Class<?>[]::new);
 
                 ctor = c.getConstructor(ctorTypes);
@@ -46,10 +43,13 @@ public class AutoSerializer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            //TODO this is concurrently confusing -> simplify
+            serialize_fields = temp_serialize_fields;
         }
     }
 
-    public static void serialize(PingMessage msg, ByteBuf out) {
+    public static <T> void serialize(T msg, ByteBuf out) {
         AutoSerializer.init(msg.getClass()); //TODO: where can this go?
 
         //Automatic serialization:
@@ -76,24 +76,23 @@ public class AutoSerializer {
         }
     }
     
-    public static PingMessage deserialize(ByteBuf in, Class<PingMessage> c) {
-
+    public static <T> T deserialize(ByteBuf in, Class<T> c) {
         AutoSerializer.init(c); //TODO: where can this go?
     
         Object [] objs = new Object[serialize_fields.size()];
         int i = 0;
 
         //Automatic serialization:
-         for(Field f : serialize_fields) {
+        for(Field f : serialize_fields) {
             if(f.getType().equals(int.class)) {
                 try {
                     objs[i] = in.readInt();
-            
+           
                 } catch(Exception e) { 
                     e.printStackTrace();
                 }
             }
-            
+           
             if(f.getType().equals(java.lang.String.class)) {
                 try {
                     objs[i] = Utils.decodeUTF8(in);
@@ -102,13 +101,13 @@ public class AutoSerializer {
                     e.printStackTrace();
                 }
             }
-
+            
             i++;
         }
 
-        PingMessage msg = null; 
+        T msg = null; 
         try {
-            msg = (PingMessage) ctor.newInstance(objs);
+            msg = (T) ctor.newInstance(objs);
         } catch(Exception e) {
             e.printStackTrace();
         }
