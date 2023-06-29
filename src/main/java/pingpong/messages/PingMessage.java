@@ -19,10 +19,10 @@ public class PingMessage extends ProtoMessage {
     public static final short MSG_ID = 101;
 
     @Serialize
-    private final int pingId;
+    private int pingId;
 
     @Serialize
-    private final String message;
+    private String message;
 
     public PingMessage(int pingId, String message) {
         super(MSG_ID);
@@ -44,7 +44,7 @@ public class PingMessage extends ProtoMessage {
         }
 
         public PingMessage deserialize(ByteBuf in) {
-            return AutoSerializer.deserialize(in);
+            return AutoSerializer.deserialize(in, PingMessage.class);
         }
     };
 

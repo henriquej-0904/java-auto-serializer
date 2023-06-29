@@ -15,15 +15,16 @@ import java.lang.annotation.*;
 public class AutoSerializer {
 
     private static List<Field> serialize_fields = null;
+    private static Constructor<?> ctor = null;
 
-    public static void init(PingMessage pm) {
+    public static <T> void init(Class<T> c) {
         if(serialize_fields != null) {return;}
 
         synchronized(AutoSerializer.class) {
             if(serialize_fields != null) {return;}
 
             List<Field> temp_serialize_fields = new ArrayList<>();
-            Field[] fields = pm.getClass().getDeclaredFields();
+            Field[] fields = c.getDeclaredFields();
 
             for(Field f : fields) {
                 if(f.isAnnotationPresent(Serialize.class)) {
@@ -33,11 +34,23 @@ public class AutoSerializer {
             }
 
             serialize_fields = temp_serialize_fields;
+
+
+
+            try {
+                Class<?>[] ctorTypes = serialize_fields.stream()
+                    .map(Field::getType).toArray(Class<?>[]::new);
+
+                ctor = c.getConstructor(ctorTypes);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public static void serialize(PingMessage msg, ByteBuf out) {
-        AutoSerializer.init(msg); //TODO: where can this go?
+        AutoSerializer.init(msg.getClass()); //TODO: where can this go?
 
         //Automatic serialization:
         for(Field f : serialize_fields) {
@@ -46,7 +59,9 @@ public class AutoSerializer {
                     int x = f.getInt(msg);
                     out.writeInt(x);
             
-                } catch(Exception e) { /*TODO*/ }
+                } catch(Exception e) { 
+                    e.printStackTrace();
+                }
             }
             
             if(f.getType().equals(java.lang.String.class)) {
@@ -54,32 +69,50 @@ public class AutoSerializer {
                     String s = (String) f.get(msg);
                     Utils.encodeUTF8(s, out);
             
-                } catch(Exception e) { /*TODO*/ }
+                } catch(Exception e) { 
+                    e.printStackTrace();
+                }
             }
         }
     }
     
-    public static PingMessage deserialize(ByteBuf in) {
-        PingMessage msg = new PingMessage(0, null);
-        AutoSerializer.init(msg); //TODO: where can this go?
+    public static PingMessage deserialize(ByteBuf in, Class<PingMessage> c) {
+
+        AutoSerializer.init(c); //TODO: where can this go?
     
+        Object [] objs = new Object[serialize_fields.size()];
+        int i = 0;
+
         //Automatic serialization:
          for(Field f : serialize_fields) {
             if(f.getType().equals(int.class)) {
                 try {
-                    f.setInt(msg, in.readInt());
+                    objs[i] = in.readInt();
             
-                } catch(Exception e) { /*TODO*/ }
+                } catch(Exception e) { 
+                    e.printStackTrace();
+                }
             }
             
             if(f.getType().equals(java.lang.String.class)) {
                 try {
-                    f.set(msg, Utils.decodeUTF8(in));
+                    objs[i] = Utils.decodeUTF8(in);
                     
-                } catch(Exception e) { /*TODO*/ }
+                } catch(Exception e) { 
+                    e.printStackTrace();
+                }
             }
+
+            i++;
         }
-    
+
+        PingMessage msg = null; 
+        try {
+            msg = (PingMessage) ctor.newInstance(objs);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
         return msg;
     }
 }
