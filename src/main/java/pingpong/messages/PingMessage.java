@@ -30,14 +30,5 @@ public class PingMessage extends ProtoMessage {
         return message;
     }
 
-    public static ISerializer<? extends ProtoMessage> serializer = new ISerializer<PingMessage>() {
-        public void serialize(PingMessage msg, ByteBuf out) {
-            AutoSerializer.serialize(msg, out);
-        }
-
-        public PingMessage deserialize(ByteBuf in) {
-            return AutoSerializer.deserialize(in, PingMessage.class);
-        }
-    };
-
+    public static ISerializer<? extends ProtoMessage> serializer = AutoSerializer.getSerializer(PingMessage.class);
 }
