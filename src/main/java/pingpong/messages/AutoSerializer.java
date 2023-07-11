@@ -8,8 +8,7 @@ import java.lang.reflect.*;
 import java.lang.reflect.Field;
 import java.lang.annotation.*;
 
-import pt.unl.fct.di.novasys.network.ISerializer; //TODO: put this elsewhere
-import pt.unl.fct.di.novasys.babel.generic.ProtoMessage;
+import pt.unl.fct.di.novasys.network.ISerializer;
 
 /* Classes who import this class must have access to @Serialize*/
 @Retention(RetentionPolicy.RUNTIME)
@@ -118,7 +117,7 @@ public class AutoSerializer {
         return msg;
     }
 
-	public static <T extends ProtoMessage> ISerializer<T> getSerializer(Class<T> c) {
+	public static <T> ISerializer<T> getSerializer(Class<T> c) {
 		
 		ISerializer<T> s = new ISerializer<T>() {
 			public void serialize(T msg, ByteBuf out) {
