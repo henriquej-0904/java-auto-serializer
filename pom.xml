@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>di.fct.unl.pt</groupId>
-    <artifactId>A-PingPong</artifactId>
+    <artifactId>Java-Auto-Serializer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -24,8 +24,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>19</source>
+                    <target>19</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -51,7 +51,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>A-PingPong</finalName>
+                            <finalName>java-auto-serializer</finalName>
                         </configuration>
                     </execution>
                 </executions>

@@ -3,6 +3,7 @@ package pingpong.messages;
 import io.netty.buffer.ByteBuf;
 import pt.unl.fct.di.novasys.babel.generic.ProtoMessage;
 import pt.unl.fct.di.novasys.network.ISerializer;
+import serializer.Utils;
 
 public class PongMessage extends ProtoMessage {
 
