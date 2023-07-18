@@ -8,6 +8,7 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 import serializer.serializers.arrays.ArraySerializer;
 import serializer.serializers.arrays.ArraysSerializer;
 import serializer.serializers.common.CommonSerializers;
+import serializer.serializers.enums.EnumSerializer;
 import serializer.serializers.primitive.PrimitiveSerializers;
 import serializer.serializers.records.RecordSerializerBuilder;
 
@@ -70,6 +71,12 @@ public class AutoSerializer {
         {
             var recordType = type.asSubclass(Record.class);
             return (ISerializer<T>) RecordSerializerBuilder.createRecordSerializer(recordType, this);
+        }
+
+        if (type.isEnum())
+        {
+            var enumType = type.asSubclass(Enum.class);
+            return (ISerializer<T>) new EnumSerializer(enumType);
         }
         
         throw new UnsupportedOperationException("createSerializer not implemented");
