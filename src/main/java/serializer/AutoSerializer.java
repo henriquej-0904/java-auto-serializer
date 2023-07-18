@@ -9,6 +9,7 @@ import serializer.serializers.arrays.ArraySerializer;
 import serializer.serializers.arrays.ArraysSerializer;
 import serializer.serializers.common.CommonSerializers;
 import serializer.serializers.primitive.PrimitiveSerializers;
+import serializer.serializers.records.RecordSerializerBuilder;
 
 
 /**
@@ -37,14 +38,22 @@ public class AutoSerializer {
         if (res != null)
             return (ISerializer<T>) res;
 
-        if (type.isArray())
-            return (ISerializer<T>) getArraySerializer(type);
-
         res = CommonSerializers.COMMON_SERIALIZERS.get(type);
         if (res != null)
             return (ISerializer<T>) res;
 
-        res = this.runtimeSerializers.get(type.getName());
+        if (type.isArray())
+        {
+            var componentType = type.getComponentType();
+
+            if (componentType.isPrimitive())
+                return (ISerializer<T>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(componentType);
+            
+            var componentSerializer = getSerializer(componentType);
+            return (ISerializer<T>) new ArraySerializer(componentType, componentSerializer);
+        }
+
+        res = this.runtimeSerializers.get(type);
         if (res != null)
             return (ISerializer<T>) res;
 
@@ -57,7 +66,13 @@ public class AutoSerializer {
 
     protected <T> ISerializer<T> createSerializer(Class<T> type)
     {
-        return null;
+        if (type.isRecord())
+        {
+            var recordType = type.asSubclass(Record.class);
+            return (ISerializer<T>) RecordSerializerBuilder.createRecordSerializer(recordType, this);
+        }
+        
+        throw new UnsupportedOperationException("createSerializer not implemented");
     }
 
     //#region Primitive Arrays
