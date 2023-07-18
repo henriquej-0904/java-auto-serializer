@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class CharArraySerializer implements ISerializer<char[]> {
 
+    public static final CharArraySerializer INSTANCE =
+        new CharArraySerializer();
+
     public static final char[] EMPTY_ARRAY = new char[0];
 
     @Override

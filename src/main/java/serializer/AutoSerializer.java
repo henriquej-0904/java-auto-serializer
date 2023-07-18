@@ -7,6 +7,7 @@ import java.util.Map;
 import pt.unl.fct.di.novasys.network.ISerializer;
 import serializer.serializers.arrays.ArraySerializer;
 import serializer.serializers.arrays.ArraysSerializer;
+import serializer.serializers.common.CommonSerializers;
 import serializer.serializers.primitive.PrimitiveSerializers;
 
 
@@ -16,25 +17,47 @@ import serializer.serializers.primitive.PrimitiveSerializers;
  */
 public class AutoSerializer {
     
-    private final Map<Class<?>, ISerializer<?>> serializers;
+    private final Map<Class<?>, ISerializer<?>> customSerializers,
+        runtimeSerializers;
 
     protected AutoSerializer(Map<Class<?>, ISerializer<?>> customSerializers)
     {
-        this.serializers = Collections.synchronizedMap(customSerializers);
+        this.customSerializers = customSerializers;
+        this.runtimeSerializers = Collections.synchronizedMap(HashMap.newHashMap(100));
     }
 
 
-    public <T> ISerializer<T> getSerializer(Class<? extends T> type)
+    public <T> ISerializer<T> getSerializer(Class<T> type)
     {
-        ISerializer<T> res = (ISerializer<T>) PrimitiveSerializers.PRIMITIVE_SERIALIZERS.get(type);
-
+        Object res = customSerializers.get(type);
         if (res != null)
-            return res;
+            return (ISerializer<T>) res;
+
+        res = PrimitiveSerializers.PRIMITIVE_SERIALIZERS.get(type);
+        if (res != null)
+            return (ISerializer<T>) res;
 
         if (type.isArray())
             return (ISerializer<T>) getArraySerializer(type);
 
-        return (ISerializer<T>) this.serializers.get(type.getName());
+        res = CommonSerializers.COMMON_SERIALIZERS.get(type);
+        if (res != null)
+            return (ISerializer<T>) res;
+
+        res = this.runtimeSerializers.get(type.getName());
+        if (res != null)
+            return (ISerializer<T>) res;
+
+        // Not found :(
+        // Create serializer, add to runtimeSerializers and return
+        var createdSerializer = createSerializer(type);
+        this.runtimeSerializers.put(type, createdSerializer);
+        return createdSerializer;
+    }
+
+    protected <T> ISerializer<T> createSerializer(Class<T> type)
+    {
+        return null;
     }
 
     //#region Primitive Arrays

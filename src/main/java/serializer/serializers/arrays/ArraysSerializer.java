@@ -17,14 +17,14 @@ public class ArraysSerializer {
     
     public static final Map<Class<?>, ISerializer<?>> ARRAY_PRIMITIVE_SERIALIZERS =
         Map.of(
-            boolean.class, new BooleanArraySerializer(),
-            byte.class, new ByteArraySerializer(),
-            char.class, new CharArraySerializer(),
-            short.class, new ShortArraySerializer(),
-            int.class, new IntArraySerializer(),
-            long.class, new LongArraySerializer(),
-            float.class, new FloatArraySerializer(),
-            double.class, new DoubleArraySerializer()
+            boolean.class, BooleanArraySerializer.INSTANCE,
+            byte.class, ByteArraySerializer.INSTANCE,
+            char.class, CharArraySerializer.INSTANCE,
+            short.class, ShortArraySerializer.INSTANCE,
+            int.class, IntArraySerializer.INSTANCE,
+            long.class, LongArraySerializer.INSTANCE,
+            float.class, FloatArraySerializer.INSTANCE,
+            double.class, DoubleArraySerializer.INSTANCE
         );
 
     private final AutoSerializer autoSerializer;

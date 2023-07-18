@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class DoubleArraySerializer implements ISerializer<double[]> {
 
+    public static final DoubleArraySerializer INSTANCE =
+        new DoubleArraySerializer();
+
     public static final double[] EMPTY_ARRAY = new double[0];
 
     @Override

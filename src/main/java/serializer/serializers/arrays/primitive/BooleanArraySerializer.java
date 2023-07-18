@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class BooleanArraySerializer implements ISerializer<boolean[]> {
 
+    public static final BooleanArraySerializer INSTANCE =
+        new BooleanArraySerializer();
+
     public static final boolean[] EMPTY_ARRAY = new boolean[0];
 
     @Override

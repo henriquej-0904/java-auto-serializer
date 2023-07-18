@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class FloatArraySerializer implements ISerializer<float[]> {
 
+    public static final FloatArraySerializer INSTANCE =
+        new FloatArraySerializer();
+
     public static final float[] EMPTY_ARRAY = new float[0];
 
     @Override

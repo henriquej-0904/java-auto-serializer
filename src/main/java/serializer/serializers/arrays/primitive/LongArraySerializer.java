@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class LongArraySerializer implements ISerializer<long[]> {
 
+    public static final LongArraySerializer INSTANCE =
+        new LongArraySerializer();
+
     public static final long[] EMPTY_ARRAY = new long[0];
 
     @Override

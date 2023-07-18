@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class ShortArraySerializer implements ISerializer<short[]> {
 
+    public static final ShortArraySerializer INSTANCE =
+        new ShortArraySerializer();
+
     public static final short[] EMPTY_ARRAY = new short[0];
 
     @Override

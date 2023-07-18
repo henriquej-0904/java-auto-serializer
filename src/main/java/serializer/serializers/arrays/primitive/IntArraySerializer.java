@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class IntArraySerializer implements ISerializer<int[]> {
 
+    public static final IntArraySerializer INSTANCE =
+        new IntArraySerializer();
+
     public static final int[] EMPTY_ARRAY = new int[0];
 
     @Override

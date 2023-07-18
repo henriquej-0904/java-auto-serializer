@@ -7,6 +7,9 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class ByteArraySerializer implements ISerializer<byte[]> {
 
+    public static final ByteArraySerializer INSTANCE =
+        new ByteArraySerializer();
+
     public static final byte[] EMPTY_ARRAY = new byte[0];
 
     @Override
