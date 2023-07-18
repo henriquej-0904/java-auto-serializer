@@ -9,15 +9,30 @@ import pt.unl.fct.di.novasys.network.ISerializer;
 public class PrimitiveSerializers {
     
     public static final Map<Class<?>, ISerializer<?>> PRIMITIVE_SERIALIZERS =
-        Map.of(
-            Boolean.class, new BooleanSerializer(),
-            Byte.class, new ByteSerializer(),
-            Character.class, new CharSerializer(),
-            Short.class, new ShortSerializer(),
-            Integer.class, new IntSerializer(),
-            Long.class, new LongSerializer(),
-            Float.class, new FloatSerializer(),
-            Double.class, new DoubleSerializer()
+        Map.ofEntries(
+            Map.entry(Boolean.class, BooleanSerializer.INSTANCE),
+            Map.entry(boolean.class, BooleanSerializer.INSTANCE),
+
+            Map.entry(Byte.class, ByteSerializer.INSTANCE),
+            Map.entry(byte.class, ByteSerializer.INSTANCE),
+
+            Map.entry(Character.class, CharSerializer.INSTANCE),
+            Map.entry(char.class, CharSerializer.INSTANCE),
+
+            Map.entry(Short.class, ShortSerializer.INSTANCE),
+            Map.entry(short.class, ShortSerializer.INSTANCE),
+
+            Map.entry(Integer.class, IntSerializer.INSTANCE),
+            Map.entry(int.class, IntSerializer.INSTANCE),
+
+            Map.entry(Long.class, LongSerializer.INSTANCE),
+            Map.entry(long.class, LongSerializer.INSTANCE),
+
+            Map.entry(Float.class, FloatSerializer.INSTANCE),
+            Map.entry(float.class, FloatSerializer.INSTANCE),
+
+            Map.entry(Double.class, DoubleSerializer.INSTANCE),
+            Map.entry(double.class, DoubleSerializer.INSTANCE)
         );
 
 

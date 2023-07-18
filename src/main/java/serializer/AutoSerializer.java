@@ -1,15 +1,13 @@
 package serializer;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import pt.unl.fct.di.novasys.network.ISerializer;
+import serializer.serializers.arrays.ArraySerializer;
+import serializer.serializers.arrays.ArraysSerializer;
+import serializer.serializers.primitive.PrimitiveSerializers;
 
 
 /**
@@ -18,18 +16,89 @@ import pt.unl.fct.di.novasys.network.ISerializer;
  */
 public class AutoSerializer {
     
-    private final Map<String, ISerializer<?>> serializers;
+    private final Map<Class<?>, ISerializer<?>> serializers;
 
-    protected AutoSerializer(Map<String, ISerializer<?>> customSerializers)
+    protected AutoSerializer(Map<Class<?>, ISerializer<?>> customSerializers)
     {
         this.serializers = Collections.synchronizedMap(customSerializers);
     }
 
 
-    public <T> ISerializer<T> getSerializer(Class<T> type)
+    public <T> ISerializer<T> getSerializer(Class<? extends T> type)
     {
+        ISerializer<T> res = (ISerializer<T>) PrimitiveSerializers.PRIMITIVE_SERIALIZERS.get(type);
+
+        if (res != null)
+            return res;
+
+        if (type.isArray())
+            return (ISerializer<T>) getArraySerializer(type);
+
         return (ISerializer<T>) this.serializers.get(type.getName());
     }
+
+    //#region Primitive Arrays
+
+    public ISerializer<boolean[]> getArraySerializerBoolean()
+    {
+        return (ISerializer<boolean[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(boolean.class);
+    }
+
+    public ISerializer<byte[]> getArraySerializerByte()
+    {
+        return (ISerializer<byte[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(byte.class);
+    }
+
+    public ISerializer<char[]> getArraySerializerChar()
+    {
+        return (ISerializer<char[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(char.class);
+    }
+
+    public ISerializer<short[]> getArraySerializerShort()
+    {
+        return (ISerializer<short[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(short.class);
+    }
+
+    public ISerializer<int[]> getArraySerializerInt()
+    {
+        return (ISerializer<int[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(int.class);
+    }
+
+    public ISerializer<long[]> getArraySerializerLong()
+    {
+        return (ISerializer<long[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(long.class);
+    }
+
+    public ISerializer<float[]> getArraySerializerFloat()
+    {
+        return (ISerializer<float[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(float.class);
+    }
+
+    public ISerializer<double[]> getArraySerializerDouble()
+    {
+        return (ISerializer<double[]>) ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(double.class);
+    }
+
+    //#endregion
+
+    public <T> ISerializer<T[]> getArraySerializerGenericFromComponentType(Class<T> componentType)
+    {
+        var componentSerializer = getSerializer(componentType);
+        return new ArraySerializer<T>(componentType, componentSerializer);
+    }
+
+    protected ISerializer<?> getArraySerializer(Class<?> type)
+    {
+        var componentType = type.getComponentType();
+
+        if (componentType.isPrimitive())
+            return ArraysSerializer.ARRAY_PRIMITIVE_SERIALIZERS.get(componentType);
+
+        var componentSerializer = getSerializer(componentType);
+        return new ArraySerializer(componentType, componentSerializer);
+    }
+
+
 
     /**
      * A builder for the AutoSerializer class
@@ -37,7 +106,7 @@ public class AutoSerializer {
      */
     public static class Builder {
 
-        private final Map<String, ISerializer<?>> customSerializers;
+        private final Map<Class<?>, ISerializer<?>> customSerializers;
 
         /**
          * Create a new default Builder
@@ -60,7 +129,7 @@ public class AutoSerializer {
          * @return The updated builder
          */
         public <T> Builder addCustomSerializer(Class<T> type, ISerializer<T> serializer) {
-            this.customSerializers.put(type.getName(), serializer);
+            this.customSerializers.put(type, serializer);
             return this;
         }
 

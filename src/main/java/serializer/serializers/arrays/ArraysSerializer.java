@@ -13,9 +13,9 @@ import serializer.serializers.arrays.primitive.IntArraySerializer;
 import serializer.serializers.arrays.primitive.LongArraySerializer;
 import serializer.serializers.arrays.primitive.ShortArraySerializer;
 
-class ArraysSerializer {
+public class ArraysSerializer {
     
-    static final Map<Class<?>, ISerializer<?>> ARRAY_PRIMITIVE_SERIALIZERS =
+    public static final Map<Class<?>, ISerializer<?>> ARRAY_PRIMITIVE_SERIALIZERS =
         Map.of(
             boolean.class, new BooleanArraySerializer(),
             byte.class, new ByteArraySerializer(),
@@ -34,12 +34,17 @@ class ArraysSerializer {
         this.autoSerializer = autoSerializer;
     }
 
-    <T> ISerializer<T[]> getArraySerializer(Class<T> componentType)
-    {
-        if (componentType.isPrimitive())
-            return (ISerializer<T[]>) ARRAY_PRIMITIVE_SERIALIZERS.get(componentType);
+    
 
+    public <T> ISerializer<T[]> getArraySerializer(Class<T> componentType)
+    {
         var componentSerializer = this.autoSerializer.getSerializer(componentType);
+        return new ArraySerializer<T>(componentType, componentSerializer);
+    }
+
+    public static <T> ISerializer<T[]> getArraySerializer(Class<? extends T> componentType,
+        ISerializer<T> componentSerializer)
+    {
         return new ArraySerializer<T>(componentType, componentSerializer);
     }
 
