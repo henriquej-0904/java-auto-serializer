@@ -1,11 +1,25 @@
 package serializer.serializers.primitive;
 
 import java.io.IOException;
+import java.util.Map;
 
 import io.netty.buffer.ByteBuf;
+import pt.unl.fct.di.novasys.network.ISerializer;
 
 public class PrimitiveSerializers {
     
+    public static final Map<Class<?>, ISerializer<?>> PRIMITIVE_SERIALIZERS =
+        Map.of(
+            Boolean.class, new BooleanSerializer(),
+            Byte.class, new ByteSerializer(),
+            Character.class, new CharSerializer(),
+            Short.class, new ShortSerializer(),
+            Integer.class, new IntSerializer(),
+            Long.class, new LongSerializer(),
+            Float.class, new FloatSerializer(),
+            Double.class, new DoubleSerializer()
+        );
+
 
     public static void serializeBoolean(boolean val, ByteBuf out) throws IOException
     {
